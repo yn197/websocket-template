@@ -2,7 +2,8 @@ package com.example.websocket.server;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.websocket.constant.WebsocketConst;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -21,10 +22,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Ruoyi-Cloud-Plus开发小组
  */
 @Component
-@Slf4j
 @ServerEndpoint("/websocket/{userId}")
 public class WebSocket {
-
+    public static final Logger logger = LoggerFactory.getLogger(WebSocket.class);
     private Session session;
 
     @Override
@@ -59,7 +59,7 @@ public class WebSocket {
             this.session = session;
             WEB_SOCKETS.add(this);
             SESSION_POOL.put(userId, session);
-            log.info("【websocket消息】有新的连接，总数为: {}", WEB_SOCKETS.size());
+            logger.info("【websocket消息】有新的连接，总数为: {}", WEB_SOCKETS.size());
         } catch (Exception e) {
         }
     }
@@ -69,14 +69,14 @@ public class WebSocket {
         try {
             WEB_SOCKETS.remove(this);
             SESSION_POOL.remove(userId);
-            log.info("【websocket消息】连接断开，总数为: {}", WEB_SOCKETS.size());
+            logger.info("【websocket消息】连接断开，总数为: {}", WEB_SOCKETS.size());
         } catch (Exception e) {
         }
     }
 
     @OnMessage
     public void onMessage(String message) {
-        log.debug("【websocket消息】收到客户端消息: {}", message);
+        logger.debug("【websocket消息】收到客户端消息: {}", message);
         JSONObject obj = new JSONObject();
         //业务类型,是模拟查询出来的业务数据
         obj.put(WebsocketConst.MSG_OBJ, WebsocketConst.MSG_USERNAME);
@@ -94,7 +94,7 @@ public class WebSocket {
             }
             WEB_SOCKETS.remove(this);
             SESSION_POOL.remove(userId);
-            log.info("【websocket消息】连接[错误]断开，总数为: {}, 错误：{}", WEB_SOCKETS.size(), t.getMessage());
+            logger.info("【websocket消息】连接[错误]断开，总数为: {}, 错误：{}", WEB_SOCKETS.size(), t.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,7 +106,7 @@ public class WebSocket {
      * @param message 发送的消息
      */
     public static void sendAllMessage(String message) {
-        log.info("【websocket消息】广播消息:" + message);
+        logger.info("【websocket消息】广播消息:" + message);
         for (WebSocket webSocket : WEB_SOCKETS) {
             try {
 
@@ -129,7 +129,7 @@ public class WebSocket {
         Session session = SESSION_POOL.get(userId);
         if (session != null && session.isOpen()) {
             try {
-                log.info("【websocket消息】 单点消息:" + message);
+                logger.info("【websocket消息】 单点消息:" + message);
                 session.getAsyncRemote().sendText(message);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -148,7 +148,7 @@ public class WebSocket {
             Session session = SESSION_POOL.get(userId);
             if (session != null && session.isOpen()) {
                 try {
-                    log.info("【websocket消息】 单点消息:" + message);
+                    logger.info("【websocket消息】 单点消息:" + message);
                     session.getAsyncRemote().sendText(message);
                 } catch (Exception e) {
                     e.printStackTrace();

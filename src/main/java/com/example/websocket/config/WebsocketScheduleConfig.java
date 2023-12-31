@@ -1,6 +1,7 @@
 package com.example.websocket.config;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
@@ -16,17 +17,16 @@ import javax.annotation.Resource;
  * Ruoyi-Cloud-Plus开发小组
  */
 @Component
-@Slf4j
 public class WebsocketScheduleConfig {
-
+    public static final Logger logger = LoggerFactory.getLogger(WebsocketScheduleConfig.class);
     @Resource
     private WebSocketConnectionManager connectionManager;
 
     @Scheduled(fixedRate = 1000)
     public void reconnectTask() {
-        log.info("心跳检查");
+        logger.info("心跳检查");
         if (!connectionManager.isConnected()) {
-            log.info("重新连接.....");
+            logger.info("重新连接.....");
             connectionManager.stop();
             connectionManager.start();
         }
