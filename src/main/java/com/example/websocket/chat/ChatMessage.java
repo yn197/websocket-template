@@ -1,7 +1,5 @@
 package com.example.websocket.chat;
 
-import lombok.Data;
-
 /**
  * @author nisang
  * 2023/12/31 19:45
