@@ -1,0 +1,10 @@
+# application.yml
+
+# 配置WebSocket端口
+server:
+  port: 9091
+websocket:
+  server:
+    host: 127.0.0.1
+    port: 9091
+    path: /websocket

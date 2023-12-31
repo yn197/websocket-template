@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+</head>
+<body>
+<div id="chat">
+    <form id="messageForm">
+        <input type="text" id="sender" placeholder="Your Name" />
+        <input type="text" id="content" autocomplete="off" placeholder="Type your message..." />
+        <button type="submit">Send</button>
+    </form>
+    <ul id="messages"></ul>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script>
+    var stompClient = null;
+
+    function connect() {
+        var socket = new SockJS('/ws-chat');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/messages', function (response) {
+                showMessage(JSON.parse(response.body));
+            });
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
+        console.log("Disconnected");
+    }
+
+    function sendMessage() {
+        var sender = $("#sender").val();
+        var content = $("#content").val();
+        stompClient.send("/app/chat", {}, JSON.stringify({ 'sender': sender, 'content': content }));
+    }
+
+    function showMessage(message) {
+        $("#messages").append("<li><strong>" + message.sender + "</strong>: " + message.content + "</li>");
+    }
+
+    $(function () {
+        connect();
+
+        $("#messageForm").on('submit', function (e) {
+            e.preventDefault();
+            sendMessage();
+        });
+
+        $(window).on('beforeunload', function () {
+            disconnect();
+        });
+    });
+</script>
+</body>
+</html>
