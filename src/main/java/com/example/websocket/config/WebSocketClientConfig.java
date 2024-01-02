@@ -26,6 +26,7 @@ public class WebSocketClientConfig {
 
     @Value("${websocket.server.path}")
     private String webSocketServerPath;
+    public static WebSocketConnectionManager CONNECTION_MANAGER ;
     @Bean
     public WebSocketClient webSocketClient() {
         return new StandardWebSocketClient();
@@ -37,7 +38,7 @@ public class WebSocketClientConfig {
     }
 
     @Bean
-    public WebSocketConnectionManager connectionManager() {
+    public void connectionManager() {
         String webSocketUrl = String.format("ws://%s:%d%s/%s", webSocketServerHost, webSocketServerPort, webSocketServerPath, UUID.randomUUID());
         WebSocketConnectionManager connectionManager = new WebSocketConnectionManager(
                 webSocketClient(),
@@ -45,6 +46,6 @@ public class WebSocketClientConfig {
                 webSocketUrl
         );
         connectionManager.setAutoStartup(true);
-        return connectionManager;
+        CONNECTION_MANAGER = connectionManager;
     }
 }

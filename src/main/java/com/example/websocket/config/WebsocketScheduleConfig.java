@@ -19,11 +19,11 @@ import javax.annotation.Resource;
 @Component
 public class WebsocketScheduleConfig {
     public static final Logger logger = LoggerFactory.getLogger(WebsocketScheduleConfig.class);
-    @Resource
-    private WebSocketConnectionManager connectionManager;
+
 
     @Scheduled(fixedRate = 1000)
     public void reconnectTask() {
+        WebSocketConnectionManager connectionManager = WebSocketClientConfig.CONNECTION_MANAGER;
         logger.info("心跳检查");
         if (!connectionManager.isConnected()) {
             logger.info("重新连接.....");
@@ -31,4 +31,5 @@ public class WebsocketScheduleConfig {
             connectionManager.start();
         }
     }
+
 }
