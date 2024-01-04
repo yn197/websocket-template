@@ -37,8 +37,7 @@ public class WebSocketClientConfig {
         return new ClientWebSocketHandler();
     }
 
-    @Bean
-    public void connectionManager() {
+    public void initManager() {
         String webSocketUrl = String.format("ws://%s:%d%s/%s", webSocketServerHost, webSocketServerPort, webSocketServerPath, UUID.randomUUID());
         WebSocketConnectionManager connectionManager = new WebSocketConnectionManager(
                 webSocketClient(),
